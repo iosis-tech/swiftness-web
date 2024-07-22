@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
-import init, { cairovm_verify } from "cairovm_verifier";
+import init, { verify_proof } from "swiftness-starknet-with-keccak-blake2s";
 import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
 import { Button, ButtonPropsColorOverrides, colors } from "@mui/material";
 
@@ -95,7 +95,7 @@ export default function Home() {
             onClick={async () => {
               try {
                 const [programHash, programOutput] = JSON.parse(
-                  await cairovm_verify(proof),
+                  await verify_proof(proof),
                 );
                 setProgramHash(programHash);
                 setOutputHash(programOutput);
