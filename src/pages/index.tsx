@@ -95,7 +95,7 @@ export default function Home() {
             onClick={async () => {
               try {
                 const [programHash, programOutput] = JSON.parse(
-                  await verify_proof(proof),
+                  verify_proof(proof),
                 );
                 setProgramHash(programHash);
                 setOutputHash(programOutput);
