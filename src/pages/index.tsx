@@ -1,6 +1,9 @@
 import { Inter } from "next/font/google";
 import { useState } from "react";
 import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
+import { SiWebassembly } from "react-icons/si";
+import { RiNpmjsFill } from "react-icons/ri";
+import { FaGithub } from "react-icons/fa";
 import { Button } from "@mui/material";
 import init_swiftness_dex_blake2s, {
   verify_proof as verify_proof_swiftness_dex_blake2s,
@@ -196,7 +199,26 @@ export default function Home() {
     <main>
       <div className="h-screen grid justify-center items-center">
         <div className="grid grid-flow-row gap-4 p-10 w-screen max-w-[800px]">
-          <div className="text-2xl p-2 text-center">CairoVM Verifier</div>
+          <div className="text-2xl p-2 text-center grid grid-flow-col grid-cols-[100px_1fr_100px] justify-center items-center">
+            <div></div>
+            <div>cairo-vm verifier</div>
+            <div className="grid grid-flow-col gap-0 justify-around items-center">
+              <a
+                className="cursor-pointer"
+                target="_blank"
+                href="https://www.npmjs.com/search?q=swiftness"
+              >
+                <RiNpmjsFill />
+              </a>
+              <a
+                className="cursor-pointer"
+                target="_blank"
+                href="https://github.com/iosis-tech/swiftness"
+              >
+                <FaGithub />
+              </a>
+            </div>
+          </div>
           <div
             className="cursor-pointer p-10 border-2 rounded-2xl border-dashed border-gray-800 hover:bg"
             {...getRootProps()}
@@ -213,15 +235,18 @@ export default function Home() {
             )}
           </div>
           <Button
+            sx={{ color: "#F2A900" }}
             variant="text"
             size="small"
             onClick={async () => {
-              let proof = await (await fetch("proof.json")).text();
-              setFileName("8M steps starknet_with_keccak proof.json");
+              let proof = await (
+                await fetch("zerosync_incrementer_proof.json")
+              ).text();
+              setFileName("zerosync_incrementer_proof.json");
               setProof(proof);
             }}
           >
-            load example proof
+            ZeroSync incrementer proof
           </Button>
           <Button
             variant="outlined"
