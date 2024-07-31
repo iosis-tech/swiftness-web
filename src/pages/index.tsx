@@ -5,6 +5,7 @@ import { SiWebassembly } from "react-icons/si";
 import { RiNpmjsFill } from "react-icons/ri";
 import { FaGithub } from "react-icons/fa";
 import { Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import init_swiftness_dex_blake2s, {
   verify_proof as verify_proof_swiftness_dex_blake2s,
 } from "swiftness-dex-blake2s";
@@ -155,14 +156,40 @@ async function loadSwiftnessModule(layout: Layout, commitment: Commitment) {
   }
 }
 
+function humanFileSize(bytes: number, si = false, dp = 1) {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+
+  const units = si
+    ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u = -1;
+  const r = 10 ** dp;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
+
+  return bytes.toFixed(dp) + " " + units[u];
+}
+
 export default function Home() {
   const [programHash, setProgramHash] = useState<string>("");
   const [outputHash, setOutputHash] = useState<string>("");
   const [layout, setLayout] = useState<string>("");
   const [commitment, setCommitment] = useState<string>("");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileSize, setFileSize] = useState<number | null>(null);
   const [proof, setProof] = useState<string | null>(null);
   const [button, setButton] = useState<string>("verify proof");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState<
     | "inherit"
     | "primary"
@@ -185,6 +212,8 @@ export default function Home() {
       if (e.target && e.target.result) {
         setProof(e.target.result as string);
         setFileName(file.name);
+        console.log(file.size);
+        setFileSize(file.size);
       }
     };
 
@@ -199,7 +228,7 @@ export default function Home() {
     <main>
       <div className="h-screen grid justify-center items-center">
         <div className="grid grid-flow-row gap-4 p-10 w-screen max-w-[800px]">
-          <div className="text-2xl p-2 text-center grid grid-flow-col grid-cols-[100px_1fr_100px] justify-center items-center">
+          <div className="text-2xl p-2 text-center grid grid-flow-col grid-cols-[60px_1fr_60px] justify-center items-center">
             <div></div>
             <div>cairo-vm verifier</div>
             <div className="grid grid-flow-col gap-0 justify-around items-center">
@@ -224,8 +253,10 @@ export default function Home() {
             {...getRootProps()}
           >
             <input className="w-full" {...getInputProps()} />
-            {proof != null ? (
-              <p className="text-center">{fileName}</p>
+            {proof != null && fileName != null && fileSize != null ? (
+              <p className="text-center">
+                {fileName} - {humanFileSize(fileSize)}
+              </p>
             ) : isDragActive ? (
               <p className="text-center">Drop the Trace here ...</p>
             ) : (
@@ -235,18 +266,31 @@ export default function Home() {
             )}
           </div>
           <Button
-            sx={{ color: "#F2A900" }}
+            sx={{ color: "#F2A900", height: 50 }}
             variant="text"
             size="small"
+            disabled={isLoading}
             onClick={async () => {
+              setIsLoading(true);
               let proof = await (
                 await fetch("zerosync_incrementer_proof.json")
               ).text();
               setFileName("zerosync_incrementer_proof.json");
               setProof(proof);
+              const blob = new Blob([proof], { type: "text/plain" });
+              const fileSize = blob.size;
+              setFileSize(fileSize);
+              setIsLoading(false);
             }}
           >
-            ZeroSync incrementer proof
+            {isLoading ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: "#F2A900", animationDuration: "700ms" }}
+              />
+            ) : (
+              "ZeroSync incrementer proof"
+            )}
           </Button>
           <Button
             variant="outlined"
