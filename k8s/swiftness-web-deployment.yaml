@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swiftness-web
+  namespace: swiftness-web
+spec:
+  selector:
+    matchLabels:
+      app: swiftness-web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: swiftness-web
+    spec:
+      containers:
+        - name: swiftness-web
+          image: registry.internal.iosis.tech/swiftness-web
+          resources:
+            requests:
+              cpu: "1"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: swiftness-web-service
+  namespace: swiftness-web
+spec:
+  selector:
+    app: swiftness-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: swiftness-web-ingress
+  namespace: swiftness-web
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx-ingress-prod
+  tls:
+    - hosts:
+        - demo.swiftness.iosis.tech
+      secretName: swiftness-web-tls
+  rules:
+    - host: demo.swiftness.iosis.tech
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: swiftness-web-service
+                port:
+                  number: 80

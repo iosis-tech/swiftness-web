@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: swiftness-web-cert
+  namespace: swiftness-web
+spec:
+  secretName: swiftness-web-tls
+
+  dnsNames:
+  - demo.swiftness.iosis.tech
+  issuerRef:
+    name: letsencrypt-http01
+    kind: Issuer
