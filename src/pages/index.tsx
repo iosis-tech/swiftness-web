@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { DropEvent, FileRejection, useDropzone } from "react-dropzone";
 import { RiNpmjsFill } from "react-icons/ri";
 import { FaGithub } from "react-icons/fa";
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WorkerMessage, WorkerResponse } from "@/utils/types";
 import { matchCommitment, matchLayout } from "@/utils/loadModule";
@@ -184,8 +184,15 @@ export default function Home() {
             )}
           </div>
           <Button
-            sx={{ color: "#F2A900", height: 50 }}
-            variant="text"
+            sx={{
+              color: "#F2A900",
+              borderColor: "#473200",
+              height: 50,
+              "&:hover": {
+                borderColor: "#634500", // Ensure the hover state maintains the custom border color
+              },
+            }}
+            variant="outlined"
             size="small"
             disabled={isLoading}
             onClick={async () => {
@@ -207,7 +214,10 @@ export default function Home() {
                 sx={{ color: "#F2A900", animationDuration: "700ms" }}
               />
             ) : (
-              "ZeroSync incrementer proof"
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <Typography variant="body2">load zerosync</Typography>
+                <Typography variant="body2">incrementer proof</Typography>
+              </Box>
             )}
           </Button>
           <Button
