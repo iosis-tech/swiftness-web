@@ -1,13 +1,14 @@
-import { Layout, Commitment } from "@/utils/loadModule";
+import { Commitment, Layout, Stone } from "swiftness";
 
 export interface WorkerMessage {
   proof: string;
   layout: Layout;
   commitment: Commitment;
+  stone: Stone
 }
 
 export interface WorkerResponse {
   programHash?: string;
-  programOutput?: string;
+  outputHash?: string;
   error?: string;
 }

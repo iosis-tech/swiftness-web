@@ -5,7 +5,7 @@ import { FaGithub } from "react-icons/fa";
 import { Box, Button, Typography } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { WorkerMessage, WorkerResponse } from "@/utils/types";
-import { matchCommitment, matchLayout } from "@/utils/loadModule";
+import { matchCommitment, matchLayout, Stone } from "swiftness";
 
 function humanFileSize(bytes: number, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
@@ -82,14 +82,15 @@ export default function Home() {
     const parsedProof = JSON.parse(proof);
 
     const layout = matchLayout(parsedProof.public_input.layout);
-    const commitment = matchCommitment(parsedProof.proof_parameters.pow_hash);
+    const commitment = matchCommitment(parsedProof.proof_parameters.commitment_hash);
+    const stone = Stone.STONE6;
 
     workerRef.current = new Worker(new URL("../worker.ts", import.meta.url), {
       type: "module",
     });
 
     workerRef.current.onmessage = (event: MessageEvent<WorkerResponse>) => {
-      const { programHash, programOutput, error } = event.data;
+      const { programHash, outputHash, error } = event.data;
 
       if (error) {
         console.error(error);
@@ -97,7 +98,7 @@ export default function Home() {
         setButtonColor("error");
       } else {
         setProgramHash(programHash ?? "");
-        setOutputHash(programOutput ?? "");
+        setOutputHash(outputHash ?? "");
         setLayout(layout ?? "");
         setCommitment(commitment ?? "");
         setButtonText("Proof Verified");
@@ -108,11 +109,12 @@ export default function Home() {
       workerRef.current?.terminate();
     };
 
-    if (layout && commitment) {
+    if (layout && commitment && stone) {
       const message: WorkerMessage = {
         proof,
         layout,
         commitment,
+        stone,
       };
 
       workerRef.current.postMessage(message);
@@ -189,7 +191,7 @@ export default function Home() {
               borderColor: "#473200",
               height: 50,
               "&:hover": {
-                borderColor: "#634500", // Ensure the hover state maintains the custom border color
+                borderColor: "#634500",
               },
             }}
             variant="outlined"
@@ -198,9 +200,9 @@ export default function Home() {
             onClick={async () => {
               setIsLoading(true);
               let proof = await (
-                await fetch("zerosync_incrementer_proof.json")
+                await fetch("zk_evm_sync_proof.json")
               ).text();
-              setFileName("zerosync_incrementer_proof.json");
+              setFileName("zk_evm_sync_proof.json");
               setProof(proof);
               const blob = new Blob([proof], { type: "text/plain" });
               const fileSize = blob.size;
@@ -215,8 +217,7 @@ export default function Home() {
               />
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography variant="body2">load zerosync</Typography>
-                <Typography variant="body2">incrementer proof</Typography>
+                <Typography variant="body2">load zk_evm_sync proof</Typography>
               </Box>
             )}
           </Button>
