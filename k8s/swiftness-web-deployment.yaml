@@ -14,17 +14,10 @@ spec:
         app: swiftness-web
     spec:
       containers:
-        - name: swiftness-web
-          image: registry.internal.iosis.tech/swiftness-web
-          resources:
-            requests:
-              cpu: "1"
-              memory: "1Gi"
-            limits:
-              cpu: "1"
-              memory: "1Gi"
-          ports:
-            - containerPort: 3000
+      - name: swiftness-web
+        image: registry.internal.iosis.tech/swiftness-web
+        ports:
+        - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -35,9 +28,9 @@ spec:
   selector:
     app: swiftness-web
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -49,17 +42,17 @@ metadata:
 spec:
   ingressClassName: nginx-ingress-prod
   tls:
-    - hosts:
-        - demo.swiftness.iosis.tech
-      secretName: swiftness-web-tls
+  - hosts:
+    - demo.swiftness.iosis.tech
+    secretName: swiftness-web-tls
   rules:
-    - host: demo.swiftness.iosis.tech
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: swiftness-web-service
-                port:
-                  number: 80
+  - host: demo.swiftness.iosis.tech
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: swiftness-web-service
+            port:
+              number: 80
