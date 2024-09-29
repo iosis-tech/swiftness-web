@@ -14,7 +14,6 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
-      "swiftness/pkg/*": ["./node_modules/swiftness/pkg/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
