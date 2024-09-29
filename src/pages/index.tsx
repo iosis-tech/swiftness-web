@@ -200,9 +200,9 @@ export default function Home() {
             onClick={async () => {
               setIsLoading(true);
               let proof = await (
-                await fetch("zk_evm_sync_proof.json")
+                await fetch("cairo0_stone6_example_proof.json")
               ).text();
-              setFileName("zk_evm_sync_proof.json");
+              setFileName("cairo0_stone6_example_proof.json");
               setProof(proof);
               const blob = new Blob([proof], { type: "text/plain" });
               const fileSize = blob.size;
@@ -217,7 +217,7 @@ export default function Home() {
               />
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center">
-                <Typography variant="body2">load zk_evm_sync proof</Typography>
+                <Typography variant="body2">load dynamic layout proof</Typography>
               </Box>
             )}
           </Button>
